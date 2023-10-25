@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  nodered-app:
+    image: nodered/node-red:3.1
+    restart: always
+    ports:
+      - 1880:1880
+    volumes:
+      - ./ecoplus/nodered-app:/data
+    networks:
+      - ecoplus-sv
+  
+  pg_db_metadata-app:
+    image: postgres:16.0
+    restart: always
+    ports:
+      - 15432:5432
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 7Y0mhG2cva
+      POSTGRES_DB: grafana
+    volumes:
+      - ./ecoplus/pg_db_metadata-app:/var/lib/postgresql/data/
+    networks:
+      - ecoplus-sv
+
+  grafana-app:
+    image: grafana/grafana:10.2.0
+    restart: always
+    user: "0:0"
+    ports:
+      - 80:3000/tcp
+      - 9187:9187/tcp
+    environment:
+      - GF_DEFAULT_APP_MODE=development
+      - GF_DATABASE_TYPE=postgres
+      - GF_DATABASE_HOST=pg_db_metadata-app:5432
+      - GF_DATABASE_NAME=grafana
+      - GF_DATABASE_USER=admin
+      - GF_DATABASE_PASSWORD=7Y0mhG2cva
+      - GF_DATABASE_SSL_MODE=disable
+      - GF_INSTALL_PLUGINS=volkovlabs-echarts-panel,volkovlabs-rss-datasource,volkovlabs-image-panel,marcusolsson-calendar-panel,marcusolsson-dynamictext-panel,volkovlabs-form-panel,volkovlabs-grapi-datasource,volkovlabs-rss-datasource,marcusolsson-static-datasource
+    volumes:
+      - ./ecoplus/grafana-app:/var/lib/grafana
+    networks:
+      - ecoplus-sv
+    depends_on:
+      - pg_db_metadata-app
+
+networks:
+  ecoplus-sv:
+    driver: bridge
