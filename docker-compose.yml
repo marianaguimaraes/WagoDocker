@@ -7,9 +7,9 @@ services:
     ports:
       - 1880:1880
     volumes:
-      - ./ecoplus/nodered-app:/data
+      - ./vega/nodered-app:/data
     networks:
-      - ecoplus-sv
+      - vega-sv
   
   pg_db_metadata-app:
     image: postgres:16.0
@@ -21,9 +21,9 @@ services:
       POSTGRES_PASSWORD: 7Y0mhG2cva
       POSTGRES_DB: grafana
     volumes:
-      - ./ecoplus/pg_db_metadata-app:/var/lib/postgresql/data/
+      - ./vega/pg_db_metadata-app:/var/lib/postgresql/data/
     networks:
-      - ecoplus-sv
+      - vega-sv
 
   grafana-app:
     image: grafana/grafana:10.2.0
@@ -42,12 +42,12 @@ services:
       - GF_DATABASE_SSL_MODE=disable
       - GF_INSTALL_PLUGINS=volkovlabs-echarts-panel,volkovlabs-rss-datasource,volkovlabs-image-panel,marcusolsson-calendar-panel,marcusolsson-dynamictext-panel,volkovlabs-form-panel,volkovlabs-grapi-datasource,volkovlabs-rss-datasource,marcusolsson-static-datasource
     volumes:
-      - ./ecoplus/grafana-app:/var/lib/grafana
+      - ./vega/grafana-app:/var/lib/grafana
     networks:
-      - ecoplus-sv
+      - vega-sv
     depends_on:
       - pg_db_metadata-app
 
 networks:
-  ecoplus-sv:
+  vega-sv:
     driver: bridge
